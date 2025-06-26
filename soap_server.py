@@ -1,19 +1,13 @@
-from spyne import Application, rpc, ServiceBase, Unicode
-from spyne.protocol.soap import Soap11
-from spyne.server.wsgi import WsgiApplication
+from fastapi import FastAPI, Request, Response
+import os
+import uvicorn
 
-class MySoapService(ServiceBase):
-    @rpc(Unicode, _returns=Unicode)
-    def say_hello(ctx, name):
-        return f"Hello, {name}!"
+app = FastAPI()
 
-application = Application([MySoapService], 'spyne.examples.hello.soap',
-                          in_protocol=Soap11(validator='lxml'),
-                          out_protocol=Soap11())
-wsgi_app = WsgiApplication(application)
+@app.get("/")
+async def hello_world():
+    return {"message": "hello world"}
 
-if __name__ == '__main__':
-    from wsgiref.simple_server import make_server
-    server = make_server('0.0.0.0', 8000, wsgi_app)
-    print("SOAP server running on http://0.0.0.0:8000")
-    server.serve_forever()
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("soap_server:app", host="0.0.0.0", port=port, reload=True)

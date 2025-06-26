@@ -1,0 +1,3 @@
+spyne
+fastapi
+uvicorn
